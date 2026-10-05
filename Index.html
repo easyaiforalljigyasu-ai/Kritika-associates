@@ -1,1 +1,281 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Shri Enterprise | Wholesale General Store</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7f7;
+      color: #222;
+    }
+
+    header {
+      background: #0f766e;
+      color: white;
+      padding: 18px 15px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 26px;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      font-size: 14px;
+    }
+
+    .hero {
+      background: white;
+      padding: 30px 15px;
+      text-align: center;
+    }
+
+    .hero h2 {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: #555;
+      margin-bottom: 18px;
+    }
+
+    .whatsapp {
+      display: inline-block;
+      background: #25D366;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px 15px;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    #products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
+    }
+
+    .product {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .product img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      background: #eee;
+    }
+
+    .product-info {
+      padding: 12px;
+    }
+
+    .product h3 {
+      font-size: 17px;
+      margin-bottom: 7px;
+    }
+
+    .price {
+      color: #0f766e;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .order-btn {
+      display: block;
+      width: 100%;
+      border: none;
+      background: #25D366;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 30px;
+      background: #0f766e;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+    }
+
+    #error {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Shri Enterprise</h1>
+  <p>Wholesale General Store</p>
+</header>
+
+<section class="hero">
+  <h2>आपका भरोसेमंद Wholesale Store</h2>
+  <p>अपने पसंदीदा products घर बैठे WhatsApp पर order करें।</p>
+
+  <a class="whatsapp"
+     href="https://wa.me/91XXXXXXXXXX"
+     target="_blank">
+    WhatsApp पर संपर्क करें
+  </a>
+</section>
+
+<div class="container">
+
+  <h2 class="section-title">हमारे Products</h2>
+
+  <div id="loading">
+    Products loading...
+  </div>
+
+  <div id="error">
+    Products अभी load नहीं हो पाए।
+  </div>
+
+  <div id="products"></div>
+
+</div>
+
+<footer>
+  © 2026 Shri Enterprise | Wholesale General Store
+</footer>
+
+
+<script>
+  /*
+    SUPABASE SETTINGS
+    बाद में यहाँ अपना Supabase URL और Publishable Key डालेंगे.
+  */
+
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";
+  const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+  /*
+    अभी demo products दिखाए जा रहे हैं.
+    Supabase connect करने के बाद यही section
+    database से products लेगा.
+  */
+
+  const demoProducts = [
+    {
+      name: "Demo Product 1",
+      price: 100,
+      image: "https://via.placeholder.com/500x500?text=Product+1"
+    },
+    {
+      name: "Demo Product 2",
+      price: 150,
+      image: "https://via.placeholder.com/500x500?text=Product+2"
+    },
+    {
+      name: "Demo Product 3",
+      price: 200,
+      image: "https://via.placeholder.com/500x500?text=Product+3"
+    }
+  ];
+
+  function showProducts(products) {
+
+    const container = document.getElementById("products");
+
+    document.getElementById("loading").style.display = "none";
+
+    container.innerHTML = "";
+
+    products.forEach(product => {
+
+      const div = document.createElement("div");
+
+      div.className = "product";
+
+      div.innerHTML = `
+        <img src="${product.image}" alt="${product.name}">
+
+        <div class="product-info">
+
+          <h3>${product.name}</h3>
+
+          <div class="price">
+            ₹${product.price}
+          </div>
+
+          <button class="order-btn"
+            onclick="orderProduct('${product.name}', '${product.price}')">
+            WhatsApp पर Order करें
+          </button>
+
+        </div>
+      `;
+
+      container.appendChild(div);
+    });
+  }
+
+
+  function orderProduct(name, price) {
+
+    const phone = "91XXXXXXXXXX";
+
+    const message =
+      `नमस्ते Shri Enterprise,%0A%0A` +
+      `मुझे यह product order करना है:%0A` +
+      `Product: ${name}%0A` +
+      `Price: ₹${price}`;
+
+    window.open(
+      `https://wa.me/${phone}?text=${message}`,
+      "_blank"
+    );
+  }
+
+
+  // फिलहाल demo products
+  showProducts(demoProducts);
+
+</script>
+
+</body>
+</html>
