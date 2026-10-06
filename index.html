@@ -22,12 +22,12 @@
     header {
       background: #0f766e;
       color: white;
-      padding: 18px 15px;
       text-align: center;
+      padding: 20px 15px;
     }
 
     header h1 {
-      font-size: 26px;
+      font-size: 28px;
       margin-bottom: 5px;
     }
 
@@ -37,45 +37,61 @@
 
     .hero {
       background: white;
-      padding: 30px 15px;
       text-align: center;
+      padding: 30px 15px;
     }
 
     .hero h2 {
-      font-size: 30px;
+      font-size: 28px;
       margin-bottom: 10px;
     }
 
     .hero p {
       color: #555;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
-    .whatsapp {
+    .whatsapp-btn {
       display: inline-block;
       background: #25D366;
       color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
       text-decoration: none;
+      padding: 13px 20px;
+      border-radius: 8px;
       font-weight: bold;
     }
 
     .container {
       max-width: 1100px;
       margin: auto;
-      padding: 20px 15px;
+      padding: 25px 15px;
     }
 
     .section-title {
       text-align: center;
       margin-bottom: 20px;
-      font-size: 24px;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 30px;
+      color: #555;
+    }
+
+    #error {
+      display: none;
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      background: #ffe5e5;
+      color: #b00020;
+      text-align: center;
+      word-break: break-word;
     }
 
     #products {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 15px;
     }
 
@@ -88,7 +104,7 @@
 
     .product img {
       width: 100%;
-      height: 160px;
+      height: 170px;
       object-fit: cover;
       background: #eee;
     }
@@ -97,26 +113,43 @@
       padding: 12px;
     }
 
-    .product h3 {
+    .product-name {
       font-size: 17px;
+      font-weight: bold;
       margin-bottom: 7px;
+    }
+
+    .category {
+      color: #777;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .description {
+      color: #555;
+      font-size: 13px;
+      margin-bottom: 8px;
     }
 
     .price {
       color: #0f766e;
+      font-size: 19px;
       font-weight: bold;
-      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .stock {
+      font-size: 13px;
       margin-bottom: 10px;
     }
 
     .order-btn {
-      display: block;
       width: 100%;
       border: none;
       background: #25D366;
       color: white;
-      padding: 10px;
-      border-radius: 6px;
+      padding: 11px;
+      border-radius: 7px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -127,566 +160,289 @@
       color: white;
       text-align: center;
       padding: 20px;
-      font-size: 14px;
     }
 
-    #loading {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-    }
-
-    #error {
-      display: none;
-      text-align: center;
-      padding: 20px;
-      color: red;
+    @media (min-width: 700px) {
+      #products {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
   </style>
 </head>
 
 <body>
 
-<header>
-  <h1>Shri Enterprise</h1>
-  <p>Wholesale General Store</p>
-</header>
+  <header>
+    <h1>Shri Enterprise</h1>
+    <p>Wholesale General Store</p>
+  </header>
 
-<section class="hero">
-  <h2>आपका भरोसेमंद Wholesale Store</h2>
-  <p>अपने पसंदीदा products घर बैठे WhatsApp पर order करें।</p>
+  <section class="hero">
+    <h2>हमारा Store</h2>
+    <p>Products देखें और WhatsApp पर सीधे Order करें।</p>
 
-  <a class="whatsapp"
-     href="https://wa.me/918953176356"
-     target="_blank">
-    WhatsApp पर संपर्क करें
-  </a>
-</section>
+    <a
+      class="whatsapp-btn"
+      href="https://wa.me/91XXXXXXXXXX"
+      target="_blank">
+      WhatsApp पर संपर्क करें
+    </a>
+  </section>
 
-<div class="container">
+  <main class="container">
 
-  <h2 class="section-title">हमारे Products</h2>
+    <h2 class="section-title">हमारे Products</h2>
 
-  <div id="loading">
-    Products loading...
-  </div>
+    <div id="loading">
+      Products loading...
+    </div>
 
-  <div id="error">
-    Products अभी load नहीं हो पाए।
-  </div>
+    <div id="error"></div>
 
-  <div id="products"></div>
+    <div id="products"></div>
 
-</div>
+  </main>
 
-<footer>
-  © 2026 Shri Enterprise | Wholesale General Store
-</footer>
+  <footer>
+    © 2026 Shri Enterprise
+  </footer>
 
 
 <script>
-  /*
-    SUPABASE SETTINGS
-    बाद में यहाँ अपना Supabase URL और Publishable Key डालेंगे.
-  */
 
-  const SUPABASE_URL = "https://hdgtecaamksqlgzhqpdk.supabase.co"
-  const SUPABASE_KEY = "sb_publishable_X2dpoV_vnElokGPIRRi40w_5RLGZPip"
+/* =====================================================
+   SUPABASE SETTINGS
+   ===================================================== */
 
-  /*
-    अभी demo products दिखाए जा रहे हैं.
-    Supabase connect करने के बाद यही section
-    database से products लेगा.
-  */
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
 
-  const demoProducts = [
-    {
-      name: "Demo Product 1",
-      price: 100,
-      image: "https://via.placeholder.com/500x500?text=Product+1"
-    },
-    {
-      name: "Demo Product 2",
-      price: 150,
-      image: "https://via.placeholder.com/500x500?text=Product+2"
-    },
-    {
-      name: "Demo Product 3",
-      price: 200,
-      image: "https://via.placeholder.com/500x500?text=Product+3"
+const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+
+/* =====================================================
+   WHATSAPP NUMBER
+   India number: 91 + 10 digit mobile number
+   Example: 919876543210
+   ===================================================== */
+
+const WHATSAPP_NUMBER = "91XXXXXXXXXX";
+
+
+/* =====================================================
+   LOAD PRODUCTS FROM SUPABASE
+   ===================================================== */
+
+async function loadProducts() {
+
+  const loading = document.getElementById("loading");
+  const errorBox = document.getElementById("error");
+  const productsBox = document.getElementById("products");
+
+  try {
+
+    const url =
+      SUPABASE_URL +
+      "/rest/v1/products?select=id,name,price,image_url,category,description,stock";
+
+    const response = await fetch(url, {
+
+      method: "GET",
+
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": "application/json"
+      }
+
+    });
+
+
+    if (!response.ok) {
+
+      const errorText = await response.text();
+
+      throw new Error(
+        "Supabase Error " +
+        response.status +
+        ": " +
+        errorText
+      );
+
     }
-  ];
 
-  function showProducts(products) {
 
-    const container = document.getElementById("products");
+    const products = await response.json();
 
-    document.getElementById("loading").style.display = "none";
 
-    container.innerHTML = "";
+    loading.style.display = "none";
 
-    products.forEach(product => {
 
-      const div = document.createElement("div");
+    if (!Array.isArray(products) || products.length === 0) {
 
-      div.className = "product";
+      productsBox.innerHTML =
+        "<p style='text-align:center;padding:30px;'>Abhi koi product available nahi hai.</p>";
 
-      div.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
+      return;
+
+    }
+
+
+    productsBox.innerHTML = "";
+
+
+    products.forEach(function(product) {
+
+      const card = document.createElement("div");
+
+      card.className = "product";
+
+
+      const image =
+        product.image_url && product.image_url.trim() !== ""
+        ? product.image_url
+        : "https://placehold.co/600x600?text=Shri+Enterprise";
+
+
+      const category =
+        product.category || "";
+
+
+      const description =
+        product.description || "";
+
+
+      const stock =
+        product.stock !== null && product.stock !== undefined
+        ? product.stock
+        : 0;
+
+
+      card.innerHTML = `
+
+        <img
+          src="${escapeHtml(image)}"
+          alt="${escapeHtml(product.name || "Product")}"
+          onerror="this.src='https://placehold.co/600x600?text=Product'"
+        >
 
         <div class="product-info">
 
-          <h3>${product.name}</h3>
-
-          <div class="price">
-            ₹${product.price}
+          <div class="product-name">
+            ${escapeHtml(product.name || "Product")}
           </div>
 
-          <button class="order-btn"
-            onclick="orderProduct('${product.name}', '${product.price}')">
+          ${
+            category
+            ? `<div class="category">${escapeHtml(category)}</div>`
+            : ""
+          }
+
+          ${
+            description
+            ? `<div class="description">${escapeHtml(description)}</div>`
+            : ""
+          }
+
+          <div class="price">
+            ₹${Number(product.price || 0).toFixed(2)}
+          </div>
+
+          <div class="stock">
+            Stock: ${stock}
+          </div>
+
+          <button
+            class="order-btn"
+            onclick="orderProduct(
+              '${escapeJs(product.name || "Product")}',
+              '${Number(product.price || 0)}'
+            )">
             WhatsApp पर Order करें
           </button>
 
         </div>
       `;
 
-      container.appendChild(div);
+
+      productsBox.appendChild(card);
+
     });
+
   }
 
 
-  function orderProduct(name, price) {
+  catch (error) {
 
-    const phone = "918953176356";
-
-    const message =
-      `नमस्ते Shri Enterprise,%0A%0A` +
-      `मुझे यह product order करना है:%0A` +
-      `Product: ${name}%0A` +
-      `Price: ₹${price}`;
-
-    window.open(
-      `https://wa.me/${phone}?text=${message}`,
-      "_blank"
-    );
-  }
-
-
-  
-Perfect 👍 अब हम इन्हें index.html में डालेंगे। Publishable key भेजने की जरूरत नहीं है—आप खुद GitHub में डालें।
-
-Step 6A — index.html edit करें
-GitHub में अपनी repository खोलें:
-
-index.html → ✏️ Edit
-
-यह हिस्सा खोजें:
-
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
-इसे अपनी Supabase values से replace करें:
-
-const SUPABASE_URL = "https://xxxxxxxx.supabase.co";
-const SUPABASE_KEY = "sb_publishable_xxxxxxxxx";
-ध्यान रखें:
-
-URL के आगे/पीछे extra space न हो।
-
-service_role या secret key इस्तेमाल न करें।
-
-अपना key यहाँ chat में paste न करें।
-
-लेकिन एक जरूरी बदलाव और है
-हमारे पिछले index.html में अभी demo products दिख रहे हैं। सिर्फ URL/key डालने से Supabase वाला Test Product नहीं आएगा।
-
-इसलिए अभी पूरे code को बदलने की जरूरत नहीं है। पहले मुझे बताइए:
-
-क्या आपने URL और Publishable Key index.html में डाल दी है?
-
-अगर हाँ, तो लिखें “डाल दिया”। फिर मैं आपको अगला छोटा code change दूँगा जिससे website सीधे products table से data पढ़ेगी।
-
-
-Whatsapp number index.html mein change kar de kya
-
-हाँ 👍 अभी WhatsApp number बदल देना सही रहेगा।
-
-index.html में दो जगह यह नंबर है:
-
-91XXXXXXXXXX
-इसे अपने WhatsApp नंबर से बदलें।
-
-अगर आपका नंबर उदाहरण के लिए 9876543210 है और वह भारत का नंबर है, तो दोनों जगह:
-
-919876543210
-डालना है।
-
-दो जगह बदलें
-1. ऊपर WhatsApp contact button में:
-
-href="https://wa.me/919876543210"
-2. JavaScript में:
-
-const phone = "919876543210";
-⚠️ इसमें +, space या - नहीं लगाना है।
-
-फिर Commit changes कर दें।
-
-अगर आप चाहें तो अपना WhatsApp नंबर यहाँ लिख सकते हैं; मैं आपको exactly बता दूँगा कि किस जगह क्या डालना है।
-
-
-Ab kya karen
-
-अब अगला काम है Supabase को website से जोड़ना और Test Product को website पर दिखाना। 👍
-
-Step 7 — पहले ये 2 चीजें check करें
-आपने index.html में:
-
-✅ Supabase Project URL
-
-✅ Supabase Publishable Key
-
-✅ WhatsApp number
-
-डालकर Commit changes कर दिया है, तो अब हम database connection का code लगाएंगे।
-
-अभी यह करें
-GitHub में:
-
-Repository → index.html → ✏️ Edit
-
-नीचे JavaScript में यह हिस्सा ढूँढें:
-
-// फिलहाल demo products
-showProducts(demoProducts);
-इसे हटा दें और उसकी जगह यह code लगाएँ:
-
-
-अच्छा 👍 इसका मतलब अब 404 की समस्या ठीक हो गई है और website successfully खुल रही है। अब समस्या सिर्फ इतनी है कि Supabase से products नहीं आ रहे।
-
-हमें अब Supabase connection test करना है। सबसे पहले अनुमान से कोई और setting बदलने के बजाय एक चीज़ verify करेंगे।
-
-Step 9 — Supabase URL/Key की जाँच
-GitHub में:
-
-Repository → index.html → Edit ✏️
-
-इन दो lines को देखें:
-
-const SUPABASE_URL = "https://xxxxxxxx.supabase.co";
-const SUPABASE_KEY = "sb_publishable_xxxxxxxxx";
-ध्यान दें:
-
-URL आपके नए Supabase project का होना चाहिए।
-
-Key Publishable key होनी चाहिए।
-
-service_role या secret key नहीं।
-
-दोनों values के आसपास quotes " " रहने चाहिए।
-
-फिर एक छोटा test करेंगे
-आप अपनी website खोलकर Chrome में ⋮ → Desktop site ON करें, फिर:
-
-Right click / Developer tools → Console
-
-लेकिन मोबाइल में यह थोड़ा मुश्किल है।
-
-इसलिए बेहतर है कि आप अपनी current index.html का screenshot भेज दें, खासकर वह हिस्सा जहाँ ये दो lines हैं:
-
-const SUPABASE_URL = ...
-const SUPABASE_KEY = ...
-⚠️ Publishable key को screenshot में पूरा दिखाना जरूरी नहीं है। आप उसके बीच का हिस्सा छुपा सकते हैं।
-
-और अगर संभव हो तो Supabase → Table Editor → products का भी screenshot भेजें।
-
-इन दोनों को देखकर मैं अगला exact fix दूँगा—हम तब तक आगे नहीं बढ़ेंगे जब तक Test Product website पर दिखाई नहीं देता।
-
-This might also interest you.
-
-
-
-Ad
-
-Today 7:29 AM
-1000479107.jpg
-Products loadong  yahi dikh raha hai
-
-हाँ, screenshot से समस्या साफ दिखाई दे रही है। 👍
-
-आपकी Supabase URL और Publishable Key सही जगह पर हैं, लेकिन दोनों के चारों तरफ double quotes (" ") नहीं हैं। इसी वजह से JavaScript error हो रहा है और page “Products loading...” पर अटक रहा है।
-
-अभी यही ठीक करें
-GitHub में index.html → ✏️ Edit करें।
-
-अभी आपकी lines इस तरह हैं:
-
-const SUPABASE_URL = https://....supabase.co
-const SUPABASE_KEY = sb_publishable_....
-इन्हें इस format में करें:
-
-const SUPABASE_URL = "https://....supabase.co";
-const SUPABASE_KEY = "sb_publishable_....";
-यानी आपकी वही existing URL और key रहेंगी, सिर्फ:
-
-URL के पहले और बाद में " लगाएँ
-
-Key के पहले और बाद में " लगाएँ
-
-दोनों lines के अंत में ; लगाएँ
-
-फिर
-Commit changes दबाएँ।
-
-उसके बाद अपनी live website को खोलकर Refresh करें।
-
-अगर सब सही हुआ तो:
-
-Products loading... ❌
-
-की जगह:
-
-Test Product — ₹100 ✅
-
-दिखना चाहिए।
-
-आपने screenshot में Publishable key दिखाई है। यह sb_publishable_... वाली key है, इसलिए इसे secret/service-role key की तरह treat करने की जरूरत नहीं है। फिर भी आगे से keys/screenshots सार्वजनिक रूप से शेयर न करना बेहतर है।
-
-पहले सिर्फ quotes वाला यह fix करें। फिर website refresh करके मुझे बताइए कि Test Product दिखाई दिया या अभी भी “Products loading...” है।
-
-This might also interest you.
-
-
-
-Ad
-
-Products loading hai
-
-पवन जी, चिंता मत कीजिए। अब हम अंदाज़े से बदलाव नहीं करेंगे, बल्कि पता करेंगे कि Supabase से products क्यों नहीं आ रहे हैं।
-
-आपकी पिछली स्क्रीनशॉट में Supabase URL और Publishable Key दिखाई दे रही थी। अब हमें यह जाँचना है कि वेबसाइट database से जुड़ पा रही है या नहीं और कोई error तो नहीं आ रहा।
-
-Step 1 — Error पता करने वाला code लगाएँ
-GitHub में अपनी repository खोलें और index.html के Edit बटन पर जाएँ।
-
-अपने code में async function loadProducts() खोजें। उस पूरे function को हटाकर यह code डालें:
-
-
-async function loadProducts() {
-  const loading = document.getElementById("loading");
-  const errorBox = document.getElementById("error");
-
-  try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/products?select=*`,
-      {
-        method: "GET",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`
-        }
-      }
-    );
-
-    if (!response.ok) {
-      const details = await response.text();
-      throw new Error(
-        "HTTP " + response.status + ": " + details
-      );
-    }
-
-    const products = await response.json();
+    console.error("Supabase connection error:", error);
 
     loading.style.display = "none";
-    errorBox.style.display = "none";
 
-    showProducts(products);
-
-  } catch (error) {
-    console.error("Supabase Error:", error);
-
-    loading.style.display = "none";
     errorBox.style.display = "block";
-    errorBox.textContent = "Error: " + error.message;
+
+    errorBox.innerHTML =
+      "<b>Products load नहीं हो पाए।</b><br><br>" +
+      escapeHtml(error.message);
+
   }
+
 }
 
-अच्छा 👍 इसका मतलब अब 404 की समस्या ठीक हो गई है और website successfully खुल रही है। अब समस्या सिर्फ इतनी है कि Supabase से products नहीं आ रहे।
 
-हमें अब Supabase connection test करना है। सबसे पहले अनुमान से कोई और setting बदलने के बजाय एक चीज़ verify करेंगे।
+/* =====================================================
+   WHATSAPP ORDER
+   ===================================================== */
 
-Step 9 — Supabase URL/Key की जाँच
-GitHub में:
+function orderProduct(name, price) {
 
-Repository → index.html → Edit ✏️
-
-इन दो lines को देखें:
-
-const SUPABASE_URL = "https://xxxxxxxx.supabase.co";
-const SUPABASE_KEY = "sb_publishable_xxxxxxxxx";
-ध्यान दें:
-
-URL आपके नए Supabase project का होना चाहिए।
-
-Key Publishable key होनी चाहिए।
-
-service_role या secret key नहीं।
-
-दोनों values के आसपास quotes " " रहने चाहिए।
-
-फिर एक छोटा test करेंगे
-आप अपनी website खोलकर Chrome में ⋮ → Desktop site ON करें, फिर:
-
-Right click / Developer tools → Console
-
-लेकिन मोबाइल में यह थोड़ा मुश्किल है।
-
-इसलिए बेहतर है कि आप अपनी current index.html का screenshot भेज दें, खासकर वह हिस्सा जहाँ ये दो lines हैं:
-
-const SUPABASE_URL = ...
-const SUPABASE_KEY = ...
-⚠️ Publishable key को screenshot में पूरा दिखाना जरूरी नहीं है। आप उसके बीच का हिस्सा छुपा सकते हैं।
-
-और अगर संभव हो तो Supabase → Table Editor → products का भी screenshot भेजें।
-
-इन दोनों को देखकर मैं अगला exact fix दूँगा—हम तब तक आगे नहीं बढ़ेंगे जब तक Test Product website पर दिखाई नहीं देता।
-
-This might also interest you.
+  const message =
+    "नमस्ते Shri Enterprise,%0A%0A" +
+    "मुझे यह product order करना है:%0A%0A" +
+    "Product: " + encodeURIComponent(name) + "%0A" +
+    "Price: ₹" + encodeURIComponent(price) + "%0A%0A" +
+    "कृपया order confirm करें।";
 
 
-
-Ad
-
-Today 7:29 AM
-1000479107.jpg
-Products loadong  yahi dikh raha hai
-
-हाँ, screenshot से समस्या साफ दिखाई दे रही है। 👍
-
-आपकी Supabase URL और Publishable Key सही जगह पर हैं, लेकिन दोनों के चारों तरफ double quotes (" ") नहीं हैं। इसी वजह से JavaScript error हो रहा है और page “Products loading...” पर अटक रहा है।
-
-अभी यही ठीक करें
-GitHub में index.html → ✏️ Edit करें।
-
-अभी आपकी lines इस तरह हैं:
-
-const SUPABASE_URL = https://....supabase.co
-const SUPABASE_KEY = sb_publishable_....
-इन्हें इस format में करें:
-
-const SUPABASE_URL = "https://....supabase.co";
-const SUPABASE_KEY = "sb_publishable_....";
-यानी आपकी वही existing URL और key रहेंगी, सिर्फ:
-
-URL के पहले और बाद में " लगाएँ
-
-Key के पहले और बाद में " लगाएँ
-
-दोनों lines के अंत में ; लगाएँ
-
-फिर
-Commit changes दबाएँ।
-
-उसके बाद अपनी live website को खोलकर Refresh करें।
-
-अगर सब सही हुआ तो:
-
-Products loading... ❌
-
-की जगह:
-
-Test Product — ₹100 ✅
-
-दिखना चाहिए।
-
-आपने screenshot में Publishable key दिखाई है। यह sb_publishable_... वाली key है, इसलिए इसे secret/service-role key की तरह treat करने की जरूरत नहीं है। फिर भी आगे से keys/screenshots सार्वजनिक रूप से शेयर न करना बेहतर है।
-
-पहले सिर्फ quotes वाला यह fix करें। फिर website refresh करके मुझे बताइए कि Test Product दिखाई दिया या अभी भी “Products loading...” है।
-
-This might also interest you.
+  const whatsappUrl =
+    "https://wa.me/" +
+    WHATSAPP_NUMBER +
+    "?text=" +
+    message;
 
 
+  window.open(whatsappUrl, "_blank");
 
-Ad
-
-Products loading hai
-
-पवन जी, चिंता मत कीजिए। अब हम अंदाज़े से बदलाव नहीं करेंगे, बल्कि पता करेंगे कि Supabase से products क्यों नहीं आ रहे हैं।
-
-आपकी पिछली स्क्रीनशॉट में Supabase URL और Publishable Key दिखाई दे रही थी। अब हमें यह जाँचना है कि वेबसाइट database से जुड़ पा रही है या नहीं और कोई error तो नहीं आ रहा।
-
-Step 1 — Error पता करने वाला code लगाएँ
-GitHub में अपनी repository खोलें और index.html के Edit बटन पर जाएँ।
-
-अपने code में async function loadProducts() खोजें। उस पूरे function को हटाकर यह code डालें:
-
-
-async function loadProducts() {
-  const loading = document.getElementById("loading");
-  const errorBox = document.getElementById("error");
-
-  try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/products?select=*`,
-      {
-        method: "GET",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`
-        }
-      }
-    );
-
-    if (!response.ok) {
-      const details = await response.text();
-      throw new Error(
-        "HTTP " + response.status + ": " + details
-      );
-    }
-
-    const products = await response.json();
-
-    loading.style.display = "none";
-    errorBox.style.display = "none";
-
-    showProducts(products);
-
-  } catch (error) {
-    console.error("Supabase Error:", error);
-
-    loading.style.display = "none";
-    errorBox.style.display = "block";
-    errorBox.textContent = "Error: " + error.message;
-  }
-}
-async function loadProducts() {
-  try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/products?select=*`,
-      {
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Supabase connection failed");
-    }
-
-    const products = await response.json();
-
-    showProducts(products);
-
-  } catch (error) {
-    console.error(error);
-
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("error").style.display = "block";
-  }
 }
 
-loadProducts();
+
+/* =====================================================
+   SECURITY / TEXT HELPERS
+   ===================================================== */
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function escapeJs(value) {
+
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"');
+
+}
+
+
+/* =====================================================
+   START
+   ===================================================== */
 
 loadProducts();
 
