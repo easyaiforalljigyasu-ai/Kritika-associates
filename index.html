@@ -360,6 +360,304 @@ Repository → index.html → ✏️ Edit
 showProducts(demoProducts);
 इसे हटा दें और उसकी जगह यह code लगाएँ:
 
+
+अच्छा 👍 इसका मतलब अब 404 की समस्या ठीक हो गई है और website successfully खुल रही है। अब समस्या सिर्फ इतनी है कि Supabase से products नहीं आ रहे।
+
+हमें अब Supabase connection test करना है। सबसे पहले अनुमान से कोई और setting बदलने के बजाय एक चीज़ verify करेंगे।
+
+Step 9 — Supabase URL/Key की जाँच
+GitHub में:
+
+Repository → index.html → Edit ✏️
+
+इन दो lines को देखें:
+
+const SUPABASE_URL = "https://xxxxxxxx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_xxxxxxxxx";
+ध्यान दें:
+
+URL आपके नए Supabase project का होना चाहिए।
+
+Key Publishable key होनी चाहिए।
+
+service_role या secret key नहीं।
+
+दोनों values के आसपास quotes " " रहने चाहिए।
+
+फिर एक छोटा test करेंगे
+आप अपनी website खोलकर Chrome में ⋮ → Desktop site ON करें, फिर:
+
+Right click / Developer tools → Console
+
+लेकिन मोबाइल में यह थोड़ा मुश्किल है।
+
+इसलिए बेहतर है कि आप अपनी current index.html का screenshot भेज दें, खासकर वह हिस्सा जहाँ ये दो lines हैं:
+
+const SUPABASE_URL = ...
+const SUPABASE_KEY = ...
+⚠️ Publishable key को screenshot में पूरा दिखाना जरूरी नहीं है। आप उसके बीच का हिस्सा छुपा सकते हैं।
+
+और अगर संभव हो तो Supabase → Table Editor → products का भी screenshot भेजें।
+
+इन दोनों को देखकर मैं अगला exact fix दूँगा—हम तब तक आगे नहीं बढ़ेंगे जब तक Test Product website पर दिखाई नहीं देता।
+
+This might also interest you.
+
+
+
+Ad
+
+Today 7:29 AM
+1000479107.jpg
+Products loadong  yahi dikh raha hai
+
+हाँ, screenshot से समस्या साफ दिखाई दे रही है। 👍
+
+आपकी Supabase URL और Publishable Key सही जगह पर हैं, लेकिन दोनों के चारों तरफ double quotes (" ") नहीं हैं। इसी वजह से JavaScript error हो रहा है और page “Products loading...” पर अटक रहा है।
+
+अभी यही ठीक करें
+GitHub में index.html → ✏️ Edit करें।
+
+अभी आपकी lines इस तरह हैं:
+
+const SUPABASE_URL = https://....supabase.co
+const SUPABASE_KEY = sb_publishable_....
+इन्हें इस format में करें:
+
+const SUPABASE_URL = "https://....supabase.co";
+const SUPABASE_KEY = "sb_publishable_....";
+यानी आपकी वही existing URL और key रहेंगी, सिर्फ:
+
+URL के पहले और बाद में " लगाएँ
+
+Key के पहले और बाद में " लगाएँ
+
+दोनों lines के अंत में ; लगाएँ
+
+फिर
+Commit changes दबाएँ।
+
+उसके बाद अपनी live website को खोलकर Refresh करें।
+
+अगर सब सही हुआ तो:
+
+Products loading... ❌
+
+की जगह:
+
+Test Product — ₹100 ✅
+
+दिखना चाहिए।
+
+आपने screenshot में Publishable key दिखाई है। यह sb_publishable_... वाली key है, इसलिए इसे secret/service-role key की तरह treat करने की जरूरत नहीं है। फिर भी आगे से keys/screenshots सार्वजनिक रूप से शेयर न करना बेहतर है।
+
+पहले सिर्फ quotes वाला यह fix करें। फिर website refresh करके मुझे बताइए कि Test Product दिखाई दिया या अभी भी “Products loading...” है।
+
+This might also interest you.
+
+
+
+Ad
+
+Products loading hai
+
+पवन जी, चिंता मत कीजिए। अब हम अंदाज़े से बदलाव नहीं करेंगे, बल्कि पता करेंगे कि Supabase से products क्यों नहीं आ रहे हैं।
+
+आपकी पिछली स्क्रीनशॉट में Supabase URL और Publishable Key दिखाई दे रही थी। अब हमें यह जाँचना है कि वेबसाइट database से जुड़ पा रही है या नहीं और कोई error तो नहीं आ रहा।
+
+Step 1 — Error पता करने वाला code लगाएँ
+GitHub में अपनी repository खोलें और index.html के Edit बटन पर जाएँ।
+
+अपने code में async function loadProducts() खोजें। उस पूरे function को हटाकर यह code डालें:
+
+
+async function loadProducts() {
+  const loading = document.getElementById("loading");
+  const errorBox = document.getElementById("error");
+
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/products?select=*`,
+      {
+        method: "GET",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const details = await response.text();
+      throw new Error(
+        "HTTP " + response.status + ": " + details
+      );
+    }
+
+    const products = await response.json();
+
+    loading.style.display = "none";
+    errorBox.style.display = "none";
+
+    showProducts(products);
+
+  } catch (error) {
+    console.error("Supabase Error:", error);
+
+    loading.style.display = "none";
+    errorBox.style.display = "block";
+    errorBox.textContent = "Error: " + error.message;
+  }
+}
+
+अच्छा 👍 इसका मतलब अब 404 की समस्या ठीक हो गई है और website successfully खुल रही है। अब समस्या सिर्फ इतनी है कि Supabase से products नहीं आ रहे।
+
+हमें अब Supabase connection test करना है। सबसे पहले अनुमान से कोई और setting बदलने के बजाय एक चीज़ verify करेंगे।
+
+Step 9 — Supabase URL/Key की जाँच
+GitHub में:
+
+Repository → index.html → Edit ✏️
+
+इन दो lines को देखें:
+
+const SUPABASE_URL = "https://xxxxxxxx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_xxxxxxxxx";
+ध्यान दें:
+
+URL आपके नए Supabase project का होना चाहिए।
+
+Key Publishable key होनी चाहिए।
+
+service_role या secret key नहीं।
+
+दोनों values के आसपास quotes " " रहने चाहिए।
+
+फिर एक छोटा test करेंगे
+आप अपनी website खोलकर Chrome में ⋮ → Desktop site ON करें, फिर:
+
+Right click / Developer tools → Console
+
+लेकिन मोबाइल में यह थोड़ा मुश्किल है।
+
+इसलिए बेहतर है कि आप अपनी current index.html का screenshot भेज दें, खासकर वह हिस्सा जहाँ ये दो lines हैं:
+
+const SUPABASE_URL = ...
+const SUPABASE_KEY = ...
+⚠️ Publishable key को screenshot में पूरा दिखाना जरूरी नहीं है। आप उसके बीच का हिस्सा छुपा सकते हैं।
+
+और अगर संभव हो तो Supabase → Table Editor → products का भी screenshot भेजें।
+
+इन दोनों को देखकर मैं अगला exact fix दूँगा—हम तब तक आगे नहीं बढ़ेंगे जब तक Test Product website पर दिखाई नहीं देता।
+
+This might also interest you.
+
+
+
+Ad
+
+Today 7:29 AM
+1000479107.jpg
+Products loadong  yahi dikh raha hai
+
+हाँ, screenshot से समस्या साफ दिखाई दे रही है। 👍
+
+आपकी Supabase URL और Publishable Key सही जगह पर हैं, लेकिन दोनों के चारों तरफ double quotes (" ") नहीं हैं। इसी वजह से JavaScript error हो रहा है और page “Products loading...” पर अटक रहा है।
+
+अभी यही ठीक करें
+GitHub में index.html → ✏️ Edit करें।
+
+अभी आपकी lines इस तरह हैं:
+
+const SUPABASE_URL = https://....supabase.co
+const SUPABASE_KEY = sb_publishable_....
+इन्हें इस format में करें:
+
+const SUPABASE_URL = "https://....supabase.co";
+const SUPABASE_KEY = "sb_publishable_....";
+यानी आपकी वही existing URL और key रहेंगी, सिर्फ:
+
+URL के पहले और बाद में " लगाएँ
+
+Key के पहले और बाद में " लगाएँ
+
+दोनों lines के अंत में ; लगाएँ
+
+फिर
+Commit changes दबाएँ।
+
+उसके बाद अपनी live website को खोलकर Refresh करें।
+
+अगर सब सही हुआ तो:
+
+Products loading... ❌
+
+की जगह:
+
+Test Product — ₹100 ✅
+
+दिखना चाहिए।
+
+आपने screenshot में Publishable key दिखाई है। यह sb_publishable_... वाली key है, इसलिए इसे secret/service-role key की तरह treat करने की जरूरत नहीं है। फिर भी आगे से keys/screenshots सार्वजनिक रूप से शेयर न करना बेहतर है।
+
+पहले सिर्फ quotes वाला यह fix करें। फिर website refresh करके मुझे बताइए कि Test Product दिखाई दिया या अभी भी “Products loading...” है।
+
+This might also interest you.
+
+
+
+Ad
+
+Products loading hai
+
+पवन जी, चिंता मत कीजिए। अब हम अंदाज़े से बदलाव नहीं करेंगे, बल्कि पता करेंगे कि Supabase से products क्यों नहीं आ रहे हैं।
+
+आपकी पिछली स्क्रीनशॉट में Supabase URL और Publishable Key दिखाई दे रही थी। अब हमें यह जाँचना है कि वेबसाइट database से जुड़ पा रही है या नहीं और कोई error तो नहीं आ रहा।
+
+Step 1 — Error पता करने वाला code लगाएँ
+GitHub में अपनी repository खोलें और index.html के Edit बटन पर जाएँ।
+
+अपने code में async function loadProducts() खोजें। उस पूरे function को हटाकर यह code डालें:
+
+
+async function loadProducts() {
+  const loading = document.getElementById("loading");
+  const errorBox = document.getElementById("error");
+
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/products?select=*`,
+      {
+        method: "GET",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const details = await response.text();
+      throw new Error(
+        "HTTP " + response.status + ": " + details
+      );
+    }
+
+    const products = await response.json();
+
+    loading.style.display = "none";
+    errorBox.style.display = "none";
+
+    showProducts(products);
+
+  } catch (error) {
+    console.error("Supabase Error:", error);
+
+    loading.style.display = "none";
+    errorBox.style.display = "block";
+    errorBox.textContent = "Error: " + error.message;
+  }
+}
 async function loadProducts() {
   try {
     const response = await fetch(
@@ -387,6 +685,8 @@ async function loadProducts() {
     document.getElementById("error").style.display = "block";
   }
 }
+
+loadProducts();
 
 loadProducts();
 
