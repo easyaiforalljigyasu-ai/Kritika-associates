@@ -242,7 +242,7 @@ async function loadProducts() {
 
     const url =
       SUPABASE_URL +
-      "/rest/v1/products?select=id,name,price,image_url,category,description,stock";
+      "/rest/v1/Products?select=id,name,price,image_url,category,description,stock";
 
     const response = await fetch(url, {
 
