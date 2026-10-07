@@ -402,159 +402,112 @@
   </div>
 
 
+
 <script>
 
-/* ================================
-   SUPABASE
-================================ */
-
 const SUPABASE_URL =
-  "https://hdgtecaamksqlgzhqpdk.supabase.co";
+"https://hdgtecaamksqlgzhqpdk.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_X2dpoV_vnElokGPIRRi40w_5RLGZPip";
+"sb_publishable_X2dpoV_vnElokGPIRRi40w_5RLGZPip";
 
+async function loadProducts() {
 
-/* ================================
-   WHATSAPP
-================================ */
+  const loading =
+    document.getElementById("loading");
 
-const WHATSAPP_NUMBER =
-  "918953176356";
+  const products =
+    document.getElementById("products");
 
+  const error =
+    document.getElementById("error");
 
-/* ================================
-   CART DATA
-================================ */
+  try {
 
-let cart = [];
+    const response = await fetch(
+      SUPABASE_URL +
+      "/rest/v1/Products?select=id,name,price,image_url,category,description,stock",
+      {
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization":
+            "Bearer " + SUPABASE_KEY
+        }
+      }
+    );
 
-try {
-  cart = JSON.parse(
-    localStorage.getItem("shriEnterpriseCart") || "[]"
-  );
+    if (!response.ok) {
+      throw new Error(
+        "Supabase Error: " +
+        response.status
+      );
+    }
 
-  if (!Array.isArray(cart)) {
-    cart = [];
+    const data = await response.json();
+
+    loading.style.display = "none";
+
+    if (!data || data.length === 0) {
+
+      products.innerHTML =
+        "<p style='text-align:center'>अभी कोई Product उपलब्ध नहीं है।</p>";
+
+      return;
+    }
+
+    products.innerHTML = data.map(function(product) {
+
+      return `
+        <div class="product">
+
+          <img
+            src="${product.image_url || 'https://placehold.co/600x600?text=Shri+Enterprise'}"
+            alt="${product.name || 'Product'}"
+          >
+
+          <div class="product-info">
+
+            <div class="product-name">
+              ${product.name || ""}
+            </div>
+
+            <div class="category">
+              ${product.category || ""}
+            </div>
+
+            <div class="description">
+              ${product.description || ""}
+            </div>
+
+            <div class="price">
+              ₹${Number(product.price || 0).toFixed(2)}
+            </div>
+
+            <div class="stock">
+              Stock: ${product.stock ?? 0}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  } catch (err) {
+
+    loading.style.display = "none";
+
+    error.style.display = "block";
+
+    error.textContent =
+      "Products load नहीं हो पाए: " +
+      err.message;
+
+    console.error(err);
   }
-
-} catch (e) {
-  cart = [];
 }
 
+loadProducts();
 
-/* ================================
-   SAVE CART
-================================ */
-
-function saveCart() {
-
-  localStorage.setItem(
-    "shriEnterpriseCart",
-    JSON.stringify(cart)
-  );
-
-  updateCartCount();
-}
-
-
-/* ================================
-   CART COUNT
-================================ */
-
-function updateCartCount() {
-
-  let count = 0;
-
-  cart.forEach(function(item) {
-    count += Number(item.quantity) || 0;
-  });
-
-  document.getElementById("cartCount").textContent =
-    count;
-}
-
-
-/* ================================
-   ADD PRODUCT TO CART
-================================ */
-
-function addToCart(id, name, price) {
-
-  const existing =
-    cart.find(function(item) {
-      return String(item.id) === String(id);
-    });
-
-
-  if (existing) {
-
-    existing.quantity =
-      Number(existing.quantity) + 1;
-
-  } else {
-
-    cart.push({
-      id: String(id),
-      name: String(name),
-      price: Number(price),
-      quantity: 1
-    });
-
-  }
-
-
-  saveCart();
-
-  alert(
-    name + " cart में add हो गया।"
-  );
-}
-
-
-/* ================================
-   OPEN CART
-================================ */
-
-function openCart() {
-
-  document.getElementById("cartPanel").style.display =
-    "block";
-
-  renderCart();
-}
-
-
-/* ================================
-   CLOSE CART
-================================ */
-
-function closeCart() {
-
-  document.getElementById("cartPanel").style.display =
-    "none";
-}
-
-
-/* ================================
-   DISPLAY CART
-================================ */
-
-function renderCart() {
-
-  const cartItems =
-    document.getElementById("cartItems");
-
-  const cartTotal =
-    document.getElementById("cartTotal");
-
-
-  if (cart.length === 0) {
-
-    cartItems.innerHTML =
-      '<div class="empty-cart">🛒 आपका Cart खाली है।</div>';
-
-    cartTotal.textContent =
-      "0.00";
-
-    return;
+</script>
