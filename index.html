@@ -320,7 +320,22 @@
         grid-template-columns: repeat(4, 1fr);
       }
     }
-  </style>
+  </style>.add-cart-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px;
+  border: none;
+  border-radius: 7px;
+  background: #0f766e;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.add-cart-btn:active {
+  transform: scale(0.98);
+}
 </head>
 
 <body>
@@ -483,7 +498,11 @@ async function loadProducts() {
               ₹${Number(product.price || 0).toFixed(2)}
             </div>
 
-            <div class="stock">
+            <div class="stock"><button
+  class="add-cart-btn"
+  onclick="addToCart('${String(product.id).replace(/'/g, "\\'")}', '${String(product.name || "").replace(/'/g, "\\'")}', ${Number(product.price || 0)})">
+  🛒 Add to Cart
+</button>
               Stock: ${product.stock ?? 0}
             </div>
 
@@ -510,4 +529,39 @@ async function loadProducts() {
 
 loadProducts();
 
-</script>
+</script>/* ================================
+   ADD TO CART
+================================ */
+
+let cart = JSON.parse(
+  localStorage.getItem("shriEnterpriseCart") || "[]"
+);
+
+function saveCart() {
+  localStorage.setItem(
+    "shriEnterpriseCart",
+    JSON.stringify(cart)
+  );
+}
+
+function addToCart(id, name, price) {
+
+  const existing = cart.find(function(item) {
+    return String(item.id) === String(id);
+  });
+
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({
+      id: String(id),
+      name: name,
+      price: Number(price),
+      quantity: 1
+    });
+  }
+
+  saveCart();
+
+  alert(name + " Cart में add हो गया 🛒");
+}
