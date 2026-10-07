@@ -35,28 +35,6 @@
       font-size: 14px;
     }
 
-    /* CART TOP BAR */
-    .cart-bar {
-      background: white;
-      padding: 10px 15px;
-      text-align: right;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .cart-button {
-      background: #0f766e;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
     .hero {
       background: white;
       text-align: center;
@@ -165,146 +143,15 @@
       margin-bottom: 10px;
     }
 
-    /* ADD TO CART */
-    .add-cart-btn {
+    .order-btn {
       width: 100%;
-      margin-top: 5px;
       border: none;
-      background: #0f766e;
+      background: #25D366;
       color: white;
       padding: 11px;
       border-radius: 7px;
       font-weight: bold;
       cursor: pointer;
-      font-size: 14px;
-    }
-
-    .add-cart-btn:hover {
-      background: #0b5f59;
-    }
-
-    /* CART POPUP */
-    #cartPanel {
-      display: none;
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.55);
-      z-index: 1000;
-      overflow-y: auto;
-    }
-
-    .cart-box {
-      background: white;
-      width: 94%;
-      max-width: 500px;
-      margin: 30px auto;
-      border-radius: 12px;
-      padding: 18px;
-    }
-
-    .cart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 12px;
-      margin-bottom: 10px;
-    }
-
-    .cart-header h2 {
-      font-size: 22px;
-    }
-
-    .close-cart {
-      width: 35px;
-      height: 35px;
-      border: none;
-      border-radius: 50%;
-      background: #eee;
-      font-size: 22px;
-      cursor: pointer;
-    }
-
-    .cart-item {
-      border-bottom: 1px solid #eee;
-      padding: 14px 0;
-    }
-
-    .cart-item-name {
-      font-weight: bold;
-      font-size: 16px;
-      margin-bottom: 5px;
-    }
-
-    .cart-item-price {
-      color: #0f766e;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-
-    .quantity-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .quantity-btn {
-      width: 32px;
-      height: 32px;
-      border: none;
-      border-radius: 5px;
-      background: #0f766e;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .quantity-number {
-      min-width: 30px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .remove-btn {
-      margin-left: auto;
-      border: none;
-      background: #ffe5e5;
-      color: #b00020;
-      padding: 7px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .cart-total {
-      display: flex;
-      justify-content: space-between;
-      border-top: 2px solid #ddd;
-      margin-top: 15px;
-      padding-top: 15px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .whatsapp-cart-btn {
-      width: 100%;
-      margin-top: 15px;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      background: #25D366;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .empty-cart {
-      text-align: center;
-      padding: 30px 10px;
-      color: #777;
     }
 
     footer {
@@ -329,13 +176,6 @@
     <h1>Shri Enterprise</h1>
     <p>Wholesale General Store</p>
   </header>
-
-  <!-- CART BUTTON -->
-  <div class="cart-bar">
-    <button class="cart-button" onclick="openCart()">
-      🛒 Cart (<span id="cartCount">0</span>)
-    </button>
-  </div>
 
   <section class="hero">
     <h2>हमारा Store</h2>
@@ -368,389 +208,245 @@
   </footer>
 
 
-  <!-- CART PANEL -->
-
-  <div id="cartPanel">
-
-    <div class="cart-box">
-
-      <div class="cart-header">
-
-        <h2>🛒 आपका Cart</h2>
-
-        <button
-          class="close-cart"
-          onclick="closeCart()">
-          ×
-        </button>
-
-      </div>
-
-      <div id="cartItems"></div>
-
-      <div class="cart-total">
-        <span>Total</span>
-        <span>₹<span id="cartTotal">0.00</span></span>
-      </div>
-
-      <button
-        class="whatsapp-cart-btn"
-        onclick="orderCart()">
-        📱 WhatsApp पर Order करें
-      </button>
-
-    </div>
-
-  </div>
-
-
 <script>
 
-/* ================================
-   SUPABASE
-================================ */
+/* =====================================================
+   SUPABASE SETTINGS
+   ===================================================== */
 
-const SUPABASE_URL =
-  "https://hdgtecaamksqlgzhqpdk.supabase.co";
+const SUPABASE_URL = "https://hdgtecaamksqlgzhqpdk.supabase.co"
 
-const SUPABASE_KEY =
-  "sb_publishable_X2dpoV_vnElokGPIRRi40w_5RLGZPip";
+const SUPABASE_KEY = "sb_publishable_X2dpoV_vnElokGPIRRi40w_5RLGZPip"
 
 
-/* ================================
-   WHATSAPP
-================================ */
+/* =====================================================
+   WHATSAPP NUMBER
+   India number: 91 + 10 digit mobile number
+   Example: 919876543210
+   ===================================================== */
 
-const WHATSAPP_NUMBER =
-  "918953176356";
-
-
-/* ================================
-   CART
-================================ */
-
-let cart = [];
-
-try {
-
-  cart = JSON.parse(
-    localStorage.getItem("shriEnterpriseCart") || "[]"
-  );
-
-  if (!Array.isArray(cart)) {
-    cart = [];
-  }
-
-} catch (e) {
-
-  cart = [];
-
-}
+const WHATSAPP_NUMBER = "918953176356";
 
 
-/* ================================
-   SAVE CART
-================================ */
+/* =====================================================
+   LOAD PRODUCTS FROM SUPABASE
+   ===================================================== */
 
-function saveCart() {
+async function loadProducts() {
+
+  const loading = document.getElementById("loading");
+  const errorBox = document.getElementById("error");
+  const productsBox = document.getElementById("products");
 
   try {
 
-    localStorage.setItem(
-      "shriEnterpriseCart",
-      JSON.stringify(cart)
-    );
+    const url =
+      SUPABASE_URL +
+      "/rest/v1/Products?select=id,name,price,image_url,category,description,stock";
 
-  } catch (e) {
+    const response = await fetch(url, {
 
-    console.log("Cart save error:", e);
+      method: "GET",
 
-  }
-
-  updateCartCount();
-}
-
-
-/* ================================
-   CART COUNT
-================================ */
-
-function updateCartCount() {
-
-  let count = 0;
-
-  cart.forEach(function(item) {
-
-    count += Number(item.quantity) || 0;
-
-  });
-
-  const countElement =
-    document.getElementById("cartCount");
-
-  if (countElement) {
-    countElement.textContent = count;
-  }
-}
-
-
-/* ================================
-   ADD TO CART
-================================ */
-
-function addToCart(id, name, price) {
-
-  const existing =
-    cart.find(function(item) {
-
-      return String(item.id) === String(id);
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": "application/json"
+      }
 
     });
 
 
-  if (existing) {
+    if (!response.ok) {
 
-    existing.quantity =
-      Number(existing.quantity || 0) + 1;
+      const errorText = await response.text();
 
-  } else {
+      throw new Error(
+        "Supabase Error " +
+        response.status +
+        ": " +
+        errorText
+      );
 
-    cart.push({
-
-      id: String(id),
-
-      name: String(name),
-
-      price: Number(price) || 0,
-
-      quantity: 1
-
-    });
-
-  }
+    }
 
 
-  saveCart();
-
-  alert(
-    name + " Cart में add हो गया 🛒"
-  );
-}
+    const products = await response.json();
 
 
-/* ================================
-   OPEN CART
-================================ */
-
-function openCart() {
-
-  const panel =
-    document.getElementById("cartPanel");
-
-  panel.style.display = "block";
-
-  renderCart();
-}
+    loading.style.display = "none";
 
 
-/* ================================
-   CLOSE CART
-================================ */
+    if (!Array.isArray(products) || products.length === 0) {
 
-function closeCart() {
+      productsBox.innerHTML =
+        "<p style='text-align:center;padding:30px;'>Abhi koi product available nahi hai.</p>";
 
-  document.getElementById("cartPanel")
-    .style.display = "none";
+      return;
 
-}
+    }
 
 
-/* ================================
-   RENDER CART
-================================ */
-
-function renderCart() {
-
-  const cartItems =
-    document.getElementById("cartItems");
-
-  const cartTotal =
-    document.getElementById("cartTotal");
+    productsBox.innerHTML = "";
 
 
-  if (cart.length === 0) {
+    products.forEach(function(product) {
 
-    cartItems.innerHTML =
-      '<div class="empty-cart">🛒 आपका Cart खाली है।</div>';
+      const card = document.createElement("div");
 
-    cartTotal.textContent = "0.00";
-
-    return;
-
-  }
+      card.className = "product";
 
 
-  let total = 0;
+      const image =
+        product.image_url && product.image_url.trim() !== ""
+        ? product.image_url
+        : "https://placehold.co/600x600?text=Shri+Enterprise";
 
 
-  cartItems.innerHTML =
-    cart.map(function(item, index) {
-
-      const price =
-        Number(item.price) || 0;
-
-      const quantity =
-        Number(item.quantity) || 1;
-
-      const itemTotal =
-        price * quantity;
-
-      total += itemTotal;
+      const category =
+        product.category || "";
 
 
-      return `
-        <div class="cart-item">
+      const description =
+        product.description || "";
 
-          <div class="cart-item-name">
-            ${escapeHtml(item.name)}
+
+      const stock =
+        product.stock !== null && product.stock !== undefined
+        ? product.stock
+        : 0;
+
+
+      card.innerHTML = `
+
+        <img
+          src="${escapeHtml(image)}"
+          alt="${escapeHtml(product.name || "Product")}"
+          onerror="this.src='https://placehold.co/600x600?text=Product'"
+        >
+
+        <div class="product-info">
+
+          <div class="product-name">
+            ${escapeHtml(product.name || "Product")}
           </div>
 
-          <div class="cart-item-price">
-            ₹${price.toFixed(2)} × ${quantity}
-            = ₹${itemTotal.toFixed(2)}
+          ${
+            category
+            ? `<div class="category">${escapeHtml(category)}</div>`
+            : ""
+          }
+
+          ${
+            description
+            ? `<div class="description">${escapeHtml(description)}</div>`
+            : ""
+          }
+
+          <div class="price">
+            ₹${Number(product.price || 0).toFixed(2)}
           </div>
 
-          <div class="quantity-row">
-
-            <button
-              class="quantity-btn"
-              onclick="changeQuantity(${index}, -1)">
-              −
-            </button>
-
-            <span class="quantity-number">
-              ${quantity}
-            </span>
-
-            <button
-              class="quantity-btn"
-              onclick="changeQuantity(${index}, 1)">
-              +
-            </button>
-
-            <button
-              class="remove-btn"
-              onclick="removeItem(${index})">
-              Remove
-            </button>
-
+          <div class="stock">
+            Stock: ${stock}
           </div>
+
+          <button
+            class="order-btn"
+            onclick="orderProduct(
+              '${escapeJs(product.name || "Product")}',
+              '${Number(product.price || 0)}'
+            )">
+            WhatsApp पर Order करें
+          </button>
 
         </div>
       `;
 
-    }).join("");
+
+      productsBox.appendChild(card);
+
+    });
+
+  }
 
 
-  cartTotal.textContent =
-    total.toFixed(2);
+  catch (error) {
+
+    console.error("Supabase connection error:", error);
+
+    loading.style.display = "none";
+
+    errorBox.style.display = "block";
+
+    errorBox.innerHTML =
+      "<b>Products load नहीं हो पाए।</b><br><br>" +
+      escapeHtml(error.message);
+
+  }
 
 }
 
 
-/* ================================
-   CHANGE QUANTITY
-================================ */
+/* =====================================================
+   WHATSAPP ORDER
+   ===================================================== */
 
-function changeQuantity(index, change) {
+function orderProduct(name, price) {
 
-  if (!cart[index]) {
-    return;
-  }
-
-
-  cart[index].quantity =
-    Number(cart[index].quantity || 1) + change;
-
-
-  if (cart[index].quantity <= 0) {
-
-    cart.splice(index, 1);
-
-  }
+  const message =
+    "नमस्ते Shri Enterprise,%0A%0A" +
+    "मुझे यह product order करना है:%0A%0A" +
+    "Product: " + encodeURIComponent(name) + "%0A" +
+    "Price: ₹" + encodeURIComponent(price) + "%0A%0A" +
+    "कृपया order confirm करें।";
 
 
-  saveCart();
+  const whatsappUrl =
+    "https://wa.me/" +
+    WHATSAPP_NUMBER +
+    "?text=" +
+    message;
 
-  renderCart();
+
+  window.open(whatsappUrl, "_blank");
 
 }
 
 
-/* ================================
-   REMOVE ITEM
-================================ */
+/* =====================================================
+   SECURITY / TEXT HELPERS
+   ===================================================== */
 
-function removeItem(index) {
+function escapeHtml(value) {
 
-  if (!cart[index]) {
-    return;
-  }
-
-
-  cart.splice(index, 1);
-
-  saveCart();
-
-  renderCart();
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 }
 
 
-/* ================================
-   WHATSAPP CART ORDER
-================================ */
+function escapeJs(value) {
 
-function orderCart() {
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"');
 
-  if (cart.length === 0) {
-
-    alert("आपका Cart खाली है।");
-
-    return;
-
-  }
+}
 
 
-  let message =
-    "🛒 *Shri Enterprise Order*\n\n";
+/* =====================================================
+   START
+   ===================================================== */
 
+loadProducts();
 
-  let total = 0;
+</script>
 
-
-  cart.forEach(function(item, index) {
-
-    const price =
-      Number(item.price) || 0;
-
-    const quantity =
-      Number(item.quantity) || 1;
-
-    const itemTotal =
-      price * quantity;
-
-    total += itemTotal;
-
-
-    message +=
-      (index + 1) +
-      ". " +
-      item.name +
-      "\n" +
-      "Quantity: " +
-      quantity +
-      "\n" +
-      "Price: ₹" +
-      price.toFixed(2) +
-      "\n"
+</body>
+</html>
