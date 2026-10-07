@@ -165,9 +165,10 @@
       margin-bottom: 10px;
     }
 
-    /* ADD TO CART BUTTON */
+    /* ADD TO CART */
     .add-cart-btn {
       width: 100%;
+      margin-top: 5px;
       border: none;
       background: #0f766e;
       color: white;
@@ -178,9 +179,8 @@
       font-size: 14px;
     }
 
-    .add-cart-btn:disabled {
-      background: #999;
-      cursor: not-allowed;
+    .add-cart-btn:hover {
+      background: #0b5f59;
     }
 
     /* CART POPUP */
@@ -320,22 +320,7 @@
         grid-template-columns: repeat(4, 1fr);
       }
     }
-  </style>.add-cart-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 11px;
-  border: none;
-  border-radius: 7px;
-  background: #0f766e;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.add-cart-btn:active {
-  transform: scale(0.98);
-}
+  </style>
 </head>
 
 <body>
@@ -390,6 +375,7 @@
     <div class="cart-box">
 
       <div class="cart-header">
+
         <h2>🛒 आपका Cart</h2>
 
         <button
@@ -397,6 +383,7 @@
           onclick="closeCart()">
           ×
         </button>
+
       </div>
 
       <div id="cartItems"></div>
@@ -417,94 +404,245 @@
   </div>
 
 
-
 <script>
 
+/* ================================
+   SUPABASE
+================================ */
+
 const SUPABASE_URL =
-"https://hdgtecaamksqlgzhqpdk.supabase.co";
+  "https://hdgtecaamksqlgzhqpdk.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_X2dpoV_vnElokGPIRRi40w_5RLGZPip";
+  "sb_publishable_X2dpoV_vnElokGPIRRi40w_5RLGZPip";
 
-async function loadProducts() {
 
-  const loading =
-    document.getElementById("loading");
+/* ================================
+   WHATSAPP
+================================ */
 
-  const products =
-    document.getElementById("products");
+const WHATSAPP_NUMBER =
+  "918953176356";
 
-  const error =
-    document.getElementById("error");
+
+/* ================================
+   CART
+================================ */
+
+let cart = [];
+
+try {
+
+  cart = JSON.parse(
+    localStorage.getItem("shriEnterpriseCart") || "[]"
+  );
+
+  if (!Array.isArray(cart)) {
+    cart = [];
+  }
+
+} catch (e) {
+
+  cart = [];
+
+}
+
+
+/* ================================
+   SAVE CART
+================================ */
+
+function saveCart() {
 
   try {
 
-    const response = await fetch(
-      SUPABASE_URL +
-      "/rest/v1/Products?select=id,name,price,image_url,category,description,stock",
-      {
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization":
-            "Bearer " + SUPABASE_KEY
-        }
-      }
+    localStorage.setItem(
+      "shriEnterpriseCart",
+      JSON.stringify(cart)
     );
 
-    if (!response.ok) {
-      throw new Error(
-        "Supabase Error: " +
-        response.status
-      );
-    }
+  } catch (e) {
 
-    const data = await response.json();
+    console.log("Cart save error:", e);
 
-    loading.style.display = "none";
+  }
 
-    if (!data || data.length === 0) {
+  updateCartCount();
+}
 
-      products.innerHTML =
-        "<p style='text-align:center'>अभी कोई Product उपलब्ध नहीं है।</p>";
 
-      return;
-    }
+/* ================================
+   CART COUNT
+================================ */
 
-    products.innerHTML = data.map(function(product) {
+function updateCartCount() {
+
+  let count = 0;
+
+  cart.forEach(function(item) {
+
+    count += Number(item.quantity) || 0;
+
+  });
+
+  const countElement =
+    document.getElementById("cartCount");
+
+  if (countElement) {
+    countElement.textContent = count;
+  }
+}
+
+
+/* ================================
+   ADD TO CART
+================================ */
+
+function addToCart(id, name, price) {
+
+  const existing =
+    cart.find(function(item) {
+
+      return String(item.id) === String(id);
+
+    });
+
+
+  if (existing) {
+
+    existing.quantity =
+      Number(existing.quantity || 0) + 1;
+
+  } else {
+
+    cart.push({
+
+      id: String(id),
+
+      name: String(name),
+
+      price: Number(price) || 0,
+
+      quantity: 1
+
+    });
+
+  }
+
+
+  saveCart();
+
+  alert(
+    name + " Cart में add हो गया 🛒"
+  );
+}
+
+
+/* ================================
+   OPEN CART
+================================ */
+
+function openCart() {
+
+  const panel =
+    document.getElementById("cartPanel");
+
+  panel.style.display = "block";
+
+  renderCart();
+}
+
+
+/* ================================
+   CLOSE CART
+================================ */
+
+function closeCart() {
+
+  document.getElementById("cartPanel")
+    .style.display = "none";
+
+}
+
+
+/* ================================
+   RENDER CART
+================================ */
+
+function renderCart() {
+
+  const cartItems =
+    document.getElementById("cartItems");
+
+  const cartTotal =
+    document.getElementById("cartTotal");
+
+
+  if (cart.length === 0) {
+
+    cartItems.innerHTML =
+      '<div class="empty-cart">🛒 आपका Cart खाली है।</div>';
+
+    cartTotal.textContent = "0.00";
+
+    return;
+
+  }
+
+
+  let total = 0;
+
+
+  cartItems.innerHTML =
+    cart.map(function(item, index) {
+
+      const price =
+        Number(item.price) || 0;
+
+      const quantity =
+        Number(item.quantity) || 1;
+
+      const itemTotal =
+        price * quantity;
+
+      total += itemTotal;
+
 
       return `
-        <div class="product">
+        <div class="cart-item">
 
-          <img
-            src="${product.image_url || 'https://placehold.co/600x600?text=Shri+Enterprise'}"
-            alt="${product.name || 'Product'}"
-          >
+          <div class="cart-item-name">
+            ${escapeHtml(item.name)}
+          </div>
 
-          <div class="product-info">
+          <div class="cart-item-price">
+            ₹${price.toFixed(2)} × ${quantity}
+            = ₹${itemTotal.toFixed(2)}
+          </div>
 
-            <div class="product-name">
-              ${product.name || ""}
-            </div>
+          <div class="quantity-row">
 
-            <div class="category">
-              ${product.category || ""}
-            </div>
+            <button
+              class="quantity-btn"
+              onclick="changeQuantity(${index}, -1)">
+              −
+            </button>
 
-            <div class="description">
-              ${product.description || ""}
-            </div>
+            <span class="quantity-number">
+              ${quantity}
+            </span>
 
-            <div class="price">
-              ₹${Number(product.price || 0).toFixed(2)}
-            </div>
+            <button
+              class="quantity-btn"
+              onclick="changeQuantity(${index}, 1)">
+              +
+            </button>
 
-            <div class="stock"><button
-  class="add-cart-btn"
-  onclick="addToCart('${String(product.id).replace(/'/g, "\\'")}', '${String(product.name || "").replace(/'/g, "\\'")}', ${Number(product.price || 0)})">
-  🛒 Add to Cart
-</button>
-              Stock: ${product.stock ?? 0}
-            </div>
+            <button
+              class="remove-btn"
+              onclick="removeItem(${index})">
+              Remove
+            </button>
 
           </div>
 
@@ -513,55 +651,106 @@ async function loadProducts() {
 
     }).join("");
 
-  } catch (err) {
 
-    loading.style.display = "none";
+  cartTotal.textContent =
+    total.toFixed(2);
 
-    error.style.display = "block";
-
-    error.textContent =
-      "Products load नहीं हो पाए: " +
-      err.message;
-
-    console.error(err);
-  }
 }
 
-loadProducts();
 
-</script>/* ================================
-   ADD TO CART
+/* ================================
+   CHANGE QUANTITY
 ================================ */
 
-let cart = JSON.parse(
-  localStorage.getItem("shriEnterpriseCart") || "[]"
-);
+function changeQuantity(index, change) {
 
-function saveCart() {
-  localStorage.setItem(
-    "shriEnterpriseCart",
-    JSON.stringify(cart)
-  );
-}
-
-function addToCart(id, name, price) {
-
-  const existing = cart.find(function(item) {
-    return String(item.id) === String(id);
-  });
-
-  if (existing) {
-    existing.quantity++;
-  } else {
-    cart.push({
-      id: String(id),
-      name: name,
-      price: Number(price),
-      quantity: 1
-    });
+  if (!cart[index]) {
+    return;
   }
+
+
+  cart[index].quantity =
+    Number(cart[index].quantity || 1) + change;
+
+
+  if (cart[index].quantity <= 0) {
+
+    cart.splice(index, 1);
+
+  }
+
 
   saveCart();
 
-  alert(name + " Cart में add हो गया 🛒");
+  renderCart();
+
 }
+
+
+/* ================================
+   REMOVE ITEM
+================================ */
+
+function removeItem(index) {
+
+  if (!cart[index]) {
+    return;
+  }
+
+
+  cart.splice(index, 1);
+
+  saveCart();
+
+  renderCart();
+
+}
+
+
+/* ================================
+   WHATSAPP CART ORDER
+================================ */
+
+function orderCart() {
+
+  if (cart.length === 0) {
+
+    alert("आपका Cart खाली है।");
+
+    return;
+
+  }
+
+
+  let message =
+    "🛒 *Shri Enterprise Order*\n\n";
+
+
+  let total = 0;
+
+
+  cart.forEach(function(item, index) {
+
+    const price =
+      Number(item.price) || 0;
+
+    const quantity =
+      Number(item.quantity) || 1;
+
+    const itemTotal =
+      price * quantity;
+
+    total += itemTotal;
+
+
+    message +=
+      (index + 1) +
+      ". " +
+      item.name +
+      "\n" +
+      "Quantity: " +
+      quantity +
+      "\n" +
+      "Price: ₹" +
+      price.toFixed(2) +
+      "\n"
