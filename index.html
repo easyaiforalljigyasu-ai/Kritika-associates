@@ -348,8 +348,18 @@ async function loadProducts() {
           </div>
 
           <div class="stock">
-            Stock: ${stock}
-          </div>
+  Stock: ${product.stock ?? 0}
+
+  <button
+    class="add-cart-btn"
+    onclick="addToCart(
+      '${String(product.id).replace(/'/g, "\\'")}',
+      '${String(product.name || "").replace(/'/g, "\\'")}',
+      ${Number(product.price || 0)}
+    )">
+    🛒 Add to Cart
+  </button>
+</div>
 
           <button
             class="order-btn"
@@ -444,7 +454,38 @@ function escapeJs(value) {
    START
    ===================================================== */
 
-loadProducts();
+loadProducts();let cart = JSON.parse(
+  localStorage.getItem("shriEnterpriseCart") || "[]"
+);
+
+function saveCart() {
+  localStorage.setItem(
+    "shriEnterpriseCart",
+    JSON.stringify(cart)
+  );
+}
+
+function addToCart(id, name, price) {
+
+  const existing = cart.find(function(item) {
+    return String(item.id) === String(id);
+  });
+
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({
+      id: String(id),
+      name: name,
+      price: Number(price),
+      quantity: 1
+    });
+  }
+
+  saveCart();
+
+  alert(name + " Cart में add हो गया 🛒");
+}
 
 </script>
 
